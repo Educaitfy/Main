@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='results.css') }}" />
+    <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+    rel="stylesheet">
+    <title>Search Results</title>
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="container top-bar">
+            <a href="{{ url_for('home') }}" class="logo"><img
+                    src="{{ url_for('static', filename='pictures/white-logo.png') }}" alt="Brand Logo"></a>
+            <div class="auth-buttons">
+                <a href="{{ url_for('login') }}" style="color: black; border-radius: 50px ;"
+                    class="btn btn-login">Login</a>
+            </div>
+        </div>
+        <div class="nav-list">
+            <ul>
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('login') }}">MDCAT Prep</a></li>
+                <li><a href="#counselling">Counselling</a></li>
+                <li><a href="#">Blogs</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <h1 class="mt-4">Results for "{{ query }}"</h1>
+    <div class="results-container">
+        {% for video in videos %}
+        <div class="card">
+            <img src="{{ video.thumbnail_url }}" class="card-img-top" alt="{{ video.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ video.title }}</h5>
+                <a href="{{ url_for('watch', video_id=video.video_id) }}" class="btn">Watch</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+        <!-- FOOTER SECTION -->
+
+        <section style="text-align: center; margin: 3%; padding-top: 3%; border-top: 1px solid grey; color: gray;">
+
+            <p> Copyrights © 2024 Educatify. All Rights Reserved.</p>
+        </section>
+</body>
+
+</html>

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head> 
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+    <style>
+        /* Your CSS styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            background: #B5D7FF;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 80%;
+            padding: 20px;
+            margin: auto;
+        }
+
+        .text-center {
+            margin-bottom: 30px;
+        }
+
+        .text-center h1 {
+            font-size: 2.5rem;
+            color: #007bff;
+            /* Blue color for headings */
+        }
+
+        .list-group-item {
+            background-color: #fff;
+            /* White background for list items */
+            border: none;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            padding: 10px;
+        }
+
+        .table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .table th,
+        .table td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+            /* Light gray border bottom */
+        }
+
+        .table th {
+            background-color: #007bff;
+            /* Blue background for table headers */
+            color: #fff;
+            /* White text for table headers */
+        }
+
+        .table td {
+            background-color: #fff;
+            /* White background for table cells */
+        }
+
+        .badge {
+            padding: 8px;
+            border-radius: 5px;
+            font-size: 0.875rem;
+            /* 14px font size */
+        }
+
+        .badge-success {
+            background-color: #28a745;
+            /* Green background for correct answers */
+            color: #fff;
+        }
+
+        .badge-danger {
+            background-color: #dc3545;
+            /* Red background for incorrect answers */
+            color: #fff;
+        }
+
+        .download-btn {
+            background-color: #007bff;
+            /* Blue background for button */
+            color: #fff;
+            /* White text for button */
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            /* Space between button and container */
+        }
+
+        .download-btn:hover {
+            background-color: #0056b3;
+            /* Darker blue on hover */
+        }
+
+        /* Style the button */
+#goToTopBtn {
+    display: none; /* Hidden by default */
+    position: fixed; /* Fixed/sticky position */
+    bottom: 20px; /* Place the button at the bottom of the page */
+    right: 30px; /* Place the button 30px from the right */
+    z-index: 99; /* Make sure it does not overlap */
+    border: none; /* Remove borders */
+    outline: none; /* Remove outline */
+    background-color: #555; /* Set a background color */
+    color: white; /* Text color */
+    cursor: pointer; /* Add a mouse pointer on hover */
+    padding: 15px; /* Some padding */
+    border-radius: 10px; /* Rounded corners */
+    font-size: 18px; /* Increase font size */
+}
+
+#goToTopBtn:hover {
+    background-color: #333; /* Add a dark-grey background on hover */
+}
+
+
+        @media screen and (max-width: 576px) {
+            .container {
+                padding: 10px;
+            }
+
+            .text-center h1 {
+                font-size: 20px;
+            }
+
+            .table {
+                font-size: 12px;
+                margin-left: -5%;
+            }
+
+            .download-btn {
+                justify-content: center;
+                margin-top: 10px;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+
+    <div class="container mt-5" id="result-container">
+        <button class="download-btn" onclick="downloadPDF()">Download PDF</button>
+      <a href="{{url_for('mocktests')}}">  <button class="download-btn">Go back to Tests</button> </a>
+        <p id="datedisplay"></p>
+        <div class="text-center">
+            <h1 class="mb-4">Quiz Result</h1>
+            <p class="lead">Total Correct Answers: <strong>{{ total_correct }}</strong></p>
+        </div>
+
+        <div class="my-4">
+            <h2>Subject-wise Correct Answers:</h2>
+            <ul class="list-group">
+                <li class="list-group-item">Biology: {{ subject_wise_correct['Biology'] }}</li>
+                <li class="list-group-item">Chemistry: {{ subject_wise_correct['Chemistry'] }}</li>
+                <li class="list-group-item">Physics: {{ subject_wise_correct['Physics'] }}</li>
+                <li class="list-group-item">English: {{ subject_wise_correct['English'] }}</li>
+                <li class="list-group-item">Logical Reasoning: {{ subject_wise_correct['Logical Reasoning'] }}</li>
+            </ul>
+        </div>
+
+        <div class="my-4">
+            <h2>Charts:</h2>
+            <div>
+                <h3>Subject-wise Correct MCQs</h3>
+                <div id="bar-chart" class="chart"></div>
+                {{ bar_chart_div | safe }}
+            </div>
+            <div class="mt-4">
+                <h3>Correct vs Incorrect MCQs</h3>
+                <div id="pie-chart" class="chart"></div>
+                {{ pie_chart_div | safe }}
+            </div>
+            <div class="mt-4">
+                <h3>Subject-wise Correct MCQs Distribution</h3>
+                <div id="subject-pie-chart" class="chart"></div>
+                {{ subject_pie_chart_div | safe }}
+            </div>
+        </div>
+
+        <div class="my-4">
+            <h2>Detailed Feedback:</h2>
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Question</th>
+                        <th>Your Answer</th>
+                        <th>Correct Answer</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for mcq in all_mcqs %}
+                    <tr>
+                        <td>{{ mcq['Question'] }}</td>
+                        <td>{{ mcq['user_answer'] }}</td>
+                        <td>{{ mcq['Correct Answer'] }}</td>
+                        <td>
+                            {% if mcq['is_correct'] %}
+                            <span class="badge badge-success">Correct</span>
+                            {% else %}
+                            <span class="badge badge-danger">Incorrect</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button onclick="topFunction()" id="goToTopBtn" title="Go to top">Top</button>
+        </div>
+
+        <button class="download-btn" onclick="goToDashboard()">Go back to Dashboard</button>
+
+
+
+
+        <script>
+            var todayDate = new Date();
+            var dateDisplay = document.getElementById('datedisplay');
+            dateDisplay.textContent = todayDate;
+
+            function downloadPDF() {
+                const element = document.getElementById('result-container');
+                html2pdf(element, {
+                    margin: 0.5,
+                    filename: 'Quiz_Result.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2 },
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                });
+            }
+
+            // Get the button
+            let goToTopBtn = document.getElementById("goToTopBtn");
+
+            // When the user scrolls down 20px from the top of the document, show the button
+            window.onscroll = function () { scrollFunction() };
+
+            function scrollFunction() {
+                if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                    goToTopBtn.style.display = "block";
+                } else {
+                    goToTopBtn.style.display = "none";
+                }
+            }
+
+            // When the user clicks on the button, scroll to the top of the document
+            function topFunction() {
+                document.body.scrollTop = 0; // For Safari
+                document.documentElement.scrollTop = 0; // For Chrome, Firefox, IE and Opera
+            }
+
+
+
+        </script>
+</body>
+
+</html>

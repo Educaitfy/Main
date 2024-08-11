@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mock Exam</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f8f9fa;
+        color: #343a40;
+        padding: 10px;
+        margin-top: 10px;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: auto;
+        padding: 20px;
+        background: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        margin-top: 30px;
+        margin-bottom: 30px;
+      }
+
+      h1.text-center {
+        margin-bottom: 30px;
+      }
+
+      .timer {
+        font-size: 20px;
+        font-weight: bold;
+        text-align: right;
+        margin-top: 20px;
+        color: #dc3545;
+      }
+
+      .mcq p {
+        margin-bottom: 10px;
+      }
+
+      .form-check-input:checked + .form-check-label {
+        background-color: #007bff;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .form-check-label {
+        display: inline-block;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 5px;
+        color: black;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        background-color: #8b7fec;
+        /* Light purple background */
+        width: 100%;
+        box-sizing: border-box;
+        margin-bottom: 10px;
+        /* Gap between buttons */
+      }
+
+      .form-check-input {
+        display: none;
+        /* Hide the radio circle */
+      }
+
+      .form-check-label:hover {
+        background-color: #007bff;
+        color: white;
+      }
+
+      .mcq {
+        display: none;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+      }
+
+      .mcq.active {
+        display: block;
+      }
+
+      .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 5px;
+        margin-top: 10px;
+      }
+
+      .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+      }
+
+      .start-button {
+        display: inline-block;
+        padding: 12px 25px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background-color 0.3s ease;
+      }
+
+      .start-button:hover {
+        background-color: #0056b3;
+      }
+
+      .start-button a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      .button-container {
+        display: flex;
+        justify-content: center; /* Horizontally center the button */
+        align-items: center; /* Vertically center the button, if needed */
+        margin-top: 10px;
+      }
+
+      .start-button {
+        padding: 10px 20px; /* Adjust the padding as needed */
+        font-size: 15px; /* Adjust the font size as needed */
+      }
+
+      /* Media Query for Mobile Devices */
+      @media (max-width: 768px) {
+        .start-button {
+          padding: 10px 20px;
+          font-size: 16px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .start-button {
+          padding: 8px 15px;
+          font-size: 14px;
+        }
+      }
+    </style>
+    <script>
+      let totalSeconds = 2 * 60 * 60 + 10 * 60; // 2 hours and 10 minutes in seconds
+      let currentQuestion = 0;
+
+      function startTimer() {
+        const timerElement = document.getElementById("timer");
+        const interval = setInterval(() => {
+          const hours = Math.floor(totalSeconds / 3600);
+          const minutes = Math.floor((totalSeconds % 3600) / 60);
+          const seconds = totalSeconds % 60;
+
+          // Format time as HH:MM:SS
+          const formattedTime = `${hours.toString().padStart(2, "0")}:${minutes
+            .toString()
+            .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+          timerElement.innerHTML = `Time Left: ${formattedTime}`;
+
+          if (totalSeconds <= 0) {
+            clearInterval(interval);
+            document.getElementById("quiz-form").submit(); // Auto-submit the form when the time is up
+          }
+
+          totalSeconds--;
+        }, 1000);
+      }
+
+      function showQuestion(index) {
+        const questions = document.querySelectorAll(".mcq");
+        questions.forEach((q, i) => {
+          q.classList.remove("active");
+          if (i === index) q.classList.add("active");
+        });
+      }
+
+      function nextQuestion() {
+        const questions = document.querySelectorAll(".mcq");
+        if (currentQuestion < questions.length - 1) {
+          currentQuestion++;
+          showQuestion(currentQuestion);
+        }
+      }
+
+      function prevQuestion() {
+        if (currentQuestion > 0) {
+          currentQuestion--;
+          showQuestion(currentQuestion);
+        }
+      }
+
+      window.onload = () => {
+        startTimer();
+        showQuestion(currentQuestion);
+      };
+    </script>
+  </head>
+
+  <body>
+    <div class="container">
+      <h1 style="font-weight: bold" class="text-center">Mock Exam</h1>
+      <p style="text-align: center">
+        Note: You can skip MCQs by clicking on next. <br />
+        Press Submit When done to show the results.
+      </p>
+      <div class="timer" id="timer"></div>
+      <form method="post" action="{{ url_for('MDCATEXAM') }}" id="quiz-form">
+        {% for mcq in all_mcqs %}
+        <div class="mcq">
+          <p><strong>Q{{ loop.index }}: {{ mcq['Question'] }}</strong></p>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="{{ mcq['Question'] }}"
+              value="A"
+              id="{{ mcq['Question'] }}_A"
+            />
+            <label class="form-check-label" for="{{ mcq['Question'] }}_A"
+              >{{ mcq['Option A'] }}</label
+            >
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="{{ mcq['Question'] }}"
+              value="B"
+              id="{{ mcq['Question'] }}_B"
+            />
+            <label class="form-check-label" for="{{ mcq['Question'] }}_B"
+              >{{ mcq['Option B'] }}</label
+            >
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="{{ mcq['Question'] }}"
+              value="C"
+              id="{{ mcq['Question'] }}_C"
+            />
+            <label class="form-check-label" for="{{ mcq['Question'] }}_C"
+              >{{ mcq['Option C'] }}</label
+            >
+          </div>
+          <div class="form-check">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="{{ mcq['Question'] }}"
+              value="D"
+              id="{{ mcq['Question'] }}_D"
+            />
+            <label class="form-check-label" for="{{ mcq['Question'] }}_D"
+              >{{ mcq['Option D'] }}</label
+            >
+          </div>
+        </div>
+        {% endfor %}
+        <div class="text-center">
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="prevQuestion()"
+          >
+            Prev
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            onclick="nextQuestion()"
+          >
+            Next
+          </button>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+      </form>
+      <div class="button-container">
+        <a href="{{url_for('mocktests')}}">
+          <button class="start-button">Go To Mock Tests</button>
+        </a>
+      </div>
+    </div>
+
+    <!-- FOOTER SECTION -->
+
+    <section
+      style="
+        text-align: center;
+        margin: 3%;
+        padding-top: 3%;
+        border-top: 1px solid black;
+      "
+    >
+      <p>Copyrights © 2024 Educatify. All Rights Reserved.</p>
+    </section>
+  </body>
+</html>

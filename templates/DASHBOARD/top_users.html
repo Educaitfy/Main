@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Top 10 Users</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #ffff;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+      }
+
+      .first-place {
+        color: black;
+        font-weight: 750;
+      }
+
+      .second-place {
+        color: black;
+        font-weight: 750;
+      }
+
+      .third-place {
+        color: black; /* Bronze color */
+        font-weight: 750;
+      }
+
+      h1 {
+        text-align: center;
+        color: #8d7aff;
+        margin-bottom: 20px;
+      }
+
+      table {
+        width: 80%;
+        margin: 0 auto 40px;
+        border-collapse: collapse;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+      }
+
+      th,
+      td {
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        text-align: left;
+      }
+
+      th {
+        background-color: #8d7aff;
+        color: #fff;
+        text-transform: uppercase;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f9f9f9;
+      }
+
+      tr:hover {
+        background-color: #f1f1f1;
+      }
+
+      .icon {
+        width: 30px;
+        height: 30px;
+        vertical-align: middle;
+        margin-right: 10px;
+      }
+
+      .center-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 40px;
+      }
+
+      .dashboard-button {
+        display: block;
+        background-color: #8d7aff;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        border-radius: 30px;
+        cursor: pointer;
+        margin: 10px 0;
+        width: 200px;
+      }
+
+      .dashboard-button:hover {
+        background-color: #f78176;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          padding: 10px;
+        }
+
+        table {
+          width: 100%;
+          font-size: 14px; /* Adjust font size for smaller screens */
+        }
+
+        th,
+        td {
+          padding: 10px; /* Decrease padding for smaller cells */
+        }
+
+        .dashboard-button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1><i class="fas fa-trophy"></i> Best Performers of MCQS Practice</h1>
+    <table>
+      <tr>
+        <th>Username</th>
+        <th>Total Score</th>
+      </tr>
+      {% for user in top_users %}
+      <tr
+        class="{% if loop.index == 1 %}first-place{% elif loop.index == 2 %}second-place{% elif loop.index == 3 %}third-place{% endif %}"
+      >
+        <td>
+          <img
+            src="{{ url_for('static', filename='pictures/student.png') }}"
+            alt="Student Icon"
+            class="icon"
+          />{{ user.username|capitalize }}
+        </td>
+        <td>{{ user.Total }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <h1><i class="fas fa-clipboard-list"></i> Best Performers of Mock Exam</h1>
+    <table>
+      <tr>
+        <th>Username</th>
+        <th>Marks</th>
+      </tr>
+      {% for user in top_mock_test_users %}
+      <tr
+        class="{% if loop.index == 1 %}first-place{% elif loop.index == 2 %}second-place{% elif loop.index == 3 %}third-place{% endif %}"
+      >
+        <td>
+          <img
+            src="{{ url_for('static', filename='pictures/student.png') }}"
+            alt="Student Icon"
+            class="icon"
+          />{{ user.username|capitalize }}
+        </td>
+        <td>{{ user.Marks }}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <div class="center-container">
+      <a href="{{ url_for('dash') }}" class="dashboard-button"
+        >Go to Dashboard</a
+      >
+    </div>
+  </body>
+</html>

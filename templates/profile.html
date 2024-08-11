@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Profile</title>
+    <style>
+      /* Basic styling for the form */
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f2f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      .profile-container {
+        max-width: 400px;
+        width: 100%;
+        padding: 2rem;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .profile-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+      .profile-container h2 {
+        text-align: center;
+        margin-bottom: 1.5rem;
+        color: #333;
+      }
+      .profile-container label {
+        display: block;
+        margin-top: 1rem;
+        color: #555;
+        font-weight: bold;
+      }
+      .profile-container input[type="text"],
+      .profile-container input[type="email"],
+      .profile-container input[type="password"] {
+        width: 100%;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+      }
+      .profile-container input[type="text"]:focus,
+      .profile-container input[type="email"]:focus,
+      .profile-container input[type="password"]:focus {
+        border-color: #007bff;
+        outline: none;
+      }
+      .profile-container input[type="submit"],
+      .profile-container .dashboard-button {
+        margin-top: 1.5rem;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+        width: 100%;
+        text-align: center;
+        text-decoration: none;
+        display: block;
+        box-sizing: border-box;
+      }
+      .profile-container input[type="submit"]:hover,
+      .profile-container .dashboard-button:hover {
+        background-color: #0056b3;
+      }
+      .flash-message {
+        margin: 1rem 0;
+        padding: 0.75rem;
+        border-radius: 5px;
+        font-size: 0.875rem;
+        text-align: center;
+      }
+      .flash-message.success {
+        background-color: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .flash-message.danger {
+        background-color: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="profile-container">
+      <h1 style="color: rgb(63, 62, 62)">Edit Profile</h1>
+      <!-- Flash messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="flash-message {{ category }}">{{ message }}</div>
+      {% endfor %} {% endif %} {% endwith %}
+      <form method="post" action="{{ url_for('profile') }}">
+        <label for="username">Username:</label>
+        <input
+          type="text"
+          id="username"
+          name="username"
+          value="{{ user.username }}"
+          required
+        />
+
+        <label for="email">Email:</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value="{{ user.email }}"
+          required
+        />
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required />
+
+        <input type="submit" value="Update Profile" />
+      </form>
+      <a href="{{ url_for('dashboard') }}" class="dashboard-button"
+        >Go to Dashboard</a
+      >
+    </div>
+  </body>
+</html>

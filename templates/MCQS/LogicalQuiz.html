@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Logical Quiz</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <style>
+      @media (max-width: 768px) {
+        body {
+          margin: 0% 5%;
+        }
+      }
+      .answer-key-container {
+        display: none;
+        margin-top: 20px;
+      }
+      .answer-key-item {
+        margin-bottom: 10px;
+      }
+      .correct-answer {
+        color: green;
+      }
+      .incorrect-answer {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="quiz-container">
+      <div id="question-container">
+        <div id="question">Question text will appear here</div>
+        <div id="answer-buttons" class="btn-container"></div>
+      </div>
+      <div id="navigation-buttons">
+        <button id="next-btn" class="btn" style="display: none">Next</button>
+      </div>
+      <div id="navigation-buttons">
+        <button id="prev-btn" class="btn" style="display: none">
+          Previous
+        </button>
+      </div>
+      <a href="{{ url_for('SubjMCQs') }}">
+        <button id="go-back" class="btn">Leave</button>
+      </a>
+      <div id="answer-key-container" class="answer-key-container"></div>
+    </div>
+    <script src="{{ url_for('static', filename='MCQS_JS/logical_script.js') }}"></script>
+  </body>
+</html>

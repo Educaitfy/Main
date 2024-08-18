@@ -37,7 +37,7 @@ def get_db_connection():
         host="localhost",
         port=3306,
         user="root",
-        password="DB@educatify001",
+        password="123456",
         database="educatify_db"
     )
 
@@ -996,9 +996,223 @@ def CertificatesVerification():
     return render_template('certverification.html')
 
 
+
 @app.route('/AdRules')
 def AdRules():
     return render_template('AdRules.html')
+
+
+
+#************************************************************************************************************************************
+#************************************************************************************************************************************
+#*********************************************** PRACTICE TEST CODE************************************************************************
+from flask import Flask, render_template, request, redirect, url_for, session, flash
+import csv
+from datetime import datetime
+import plotly.express as px
+import plotly.graph_objects as go
+import plotly.offline as pyo
+import plotly.graph_objects as go
+import plotly.io as pio
+
+
+# Function to read MCQs from a single CSV file
+def read_mcqs_from_file(filename):
+    mcqs = []
+    with open(filename, newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            mcq = {
+                'Question': row['Questions'],
+                'Option A': row['A'],
+                'Option B': row['B'],
+                'Option C': row['C'],
+                'Option D': row['D'],
+                'Correct Answer': row['Correct'],
+                'is_correct': None
+            }
+            mcqs.append(mcq)
+    return mcqs
+
+def calculate_results(mcqs, subject_ranges):
+    subject_scores = {}
+    for subject, (start, end) in subject_ranges.items():
+        subject_mcqs = mcqs[start:end]
+        total_mcqs = len(subject_mcqs)
+        total_correct = sum(mcq['is_correct'] for mcq in subject_mcqs)
+        subject_scores[subject] = (total_mcqs, total_correct)
+    return subject_scores
+
+def generate_piechart(total_mcqs, total_correct):
+    # Calculate the number of incorrect answers
+    incorrect_count = total_mcqs - total_correct
+    # Calculate percentages with rounding
+    correct_percentage = round((total_correct / total_mcqs) * 100, 2)
+    incorrect_percentage = round(100 - correct_percentage, 2)
+    # Handle case where rounding might make percentages slightly off
+    if abs(correct_percentage + incorrect_percentage - 100) > 0.01:
+        # Adjust to ensure the total is exactly 100%
+        incorrect_percentage = 100 - correct_percentage
+    # Define labels and sizes
+    labels = ['Correct MCQs', 'Incorrect MCQs']
+    sizes = [correct_percentage, incorrect_percentage]
+    colors = ['green', 'red']
+    # Create pie chart data
+    pie_data = [go.Pie(labels=labels, values=sizes, marker=dict(colors=colors))]
+    layout = go.Layout(title='Overall Results')
+    # Create the figure and return the HTML div for the chart
+    fig = go.Figure(data=pie_data, layout=layout)
+    pie_chart_div = pyo.plot(fig, output_type='div', include_plotlyjs=False)
+    return pie_chart_div
+
+def validate_user(name, email, code):
+    name = name.lower()
+    email = email.lower()
+    code = code.lower()
+    with open('FILES/users.csv', newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            row_name = row['name'].lower()
+            row_email = row['email'].lower()
+            row_institute = row['institute'].lower()
+            row_code = row['code'].lower()
+            if (row_name == name and 
+                row_email == email and
+                row_code == code):
+                return True, None
+    if not name or not email or not code:
+        return False, 'All fields are required.'
+    errors = []
+    with open('FILES/users.csv', newline='', encoding='utf-8') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            row_name = row['name'].lower()
+            row_email = row['email'].lower()
+            row_code = row['code'].lower()
+            if row_email == email:
+                if row_name != name:
+                    errors.append('Name is incorrect.')
+                if row_code != code:
+                    errors.append('Code is incorrect.')
+                return False, ' '.join(errors)
+    return False, 'Email is incorrect.'
+
+
+@app.route('/loginmockexam', methods=['GET', 'POST'])
+def loginmockexam():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        email = request.form.get('email')
+        institute = request.form.get('institute')
+        code = request.form.get('code')
+        is_valid, error_message = validate_user(name, email,code)
+        if is_valid:
+            # Store user info in the session
+            session['username'] = name
+            session['user_email'] = email
+            session['user_institute'] = institute
+            session['user_code'] = code
+            # Redirect to the instruction page
+            return redirect(url_for('practisetest'))
+        else:
+            flash(error_message)
+    return render_template('EXAM/loginmockexam.html')
+
+@app.route('/practisetest')
+def practisetest():
+    if 'username' not in session:
+        return redirect(url_for('loginmockexam'))
+    return render_template('EXAM/instructions.html', username=session['username'])
+
+@app.route('/practiseexam', methods=['GET', 'POST'])
+def practiseexam():
+    if 'username' not in session:
+        return redirect(url_for('loginmockexam'))
+    filename = 'FILES/mockexam.csv'
+    mcqs = read_mcqs_from_file(filename)
+    # Define subject ranges
+    subject_ranges = {
+        'Biology': (0, 68),
+        'Chemistry': (68, 122),
+        'Physics': (122, 176),
+        'English': (176, 194),
+        'Logical Reasoning': (194, 200)
+    }
+    if request.method == 'POST':
+        for mcq in mcqs:
+            user_answer = request.form.get(mcq['Question'])
+            mcq['is_correct'] = user_answer == mcq['Correct Answer']
+            mcq['user_answer'] = user_answer if not mcq['is_correct'] else None
+        subject_scores = calculate_results(mcqs, subject_ranges)
+        total_correct = sum(score[1] for score in subject_scores.values())
+        total_mcqs = sum(score[0] for score in subject_scores.values())
+        pie_chart_div = generate_piechart(total_mcqs, total_correct)
+        # Save the user's score to the new CSV file, including subject scores
+        save_user_score(session['user_email'], session['username'], total_correct, total_mcqs, subject_scores)
+        # Store result data in the session
+        session['result_data'] = {
+            'total_mcqs': total_mcqs,
+            'total_correct': total_correct,
+            'pie_chart_div': pie_chart_div,
+            'subject_scores': subject_scores
+        }
+        # Update the user.csv file with the results
+        #update_user_csv(session['user_email'], subject_scores)
+        return redirect(url_for('examresult'))
+    return render_template('EXAM/practiseexam.html', all_mcqs=mcqs, username=session['username'])
+
+@app.route('/examresult')
+def examresult():
+    # Fetch result data from session
+    result_data = session.get('result_data')
+    if not result_data:
+        return redirect(url_for('loginmockexam'))  # Redirect if no result data is available
+    total_mcqs = result_data['total_mcqs']
+    total_correct = result_data['total_correct']
+    subject_scores = result_data['subject_scores']
+    # Create bar chart for subject-wise scores
+    bar_fig = go.Figure()
+    for subject, (total_subject_mcqs, total_subject_correct) in subject_scores.items():
+        bar_fig.add_trace(go.Bar(x=[subject], y=[total_subject_correct], name=subject))
+    bar_fig.update_layout(title='Subject-wise Correct MCQs', barmode='group')
+    bar_chart_div = pio.to_html(bar_fig, full_html=False)
+    # Create pie chart for overall results
+    pie_chart_div = generate_piechart(total_mcqs, total_correct)
+    # Create subject-wise distribution pie chart
+    subject_pie_fig = go.Figure(data=[go.Pie(labels=list(subject_scores.keys()), values=[score[1] for score in subject_scores.values()])])
+    subject_pie_fig.update_layout(title='Subject-wise Correct MCQs Distribution')
+    subject_pie_chart_div = pio.to_html(subject_pie_fig, full_html=False)
+    return render_template('EXAM/examresult.html',
+                           total_correct=total_correct,
+                           bar_chart_div=bar_chart_div,
+                           pie_chart_div=pie_chart_div,
+                           subject_pie_chart_div=subject_pie_chart_div)
+
+def save_user_score(email, name, total_correct, total_mcqs, subject_scores):
+    # Prepare the score data including the subject scores
+    score_data = {
+        'name': name,
+        'email': email,
+        'total_mcqs': total_mcqs,
+        'total_correct': total_correct,
+        'score_percentage': (total_correct / total_mcqs) * 100
+    }
+    # Add scores for each subject to the data
+    for subject, (total_subject_mcqs, total_subject_correct) in subject_scores.items():
+        score_data[f'{subject}_total_mcqs'] = total_subject_mcqs
+        score_data[f'{subject}_correct'] = total_subject_correct
+    # Define the fieldnames for the CSV
+    fieldnames = ['name', 'email', 'total_mcqs', 'total_correct', 'score_percentage']
+    for subject in subject_scores:
+        fieldnames.append(f'{subject}_total_mcqs')
+        fieldnames.append(f'{subject}_correct')
+    # Append the score data to the CSV file
+    with open('FILES/user_scores.csv', 'a', newline='', encoding='utf-8') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        # Write the header if the file is empty
+        if csvfile.tell() == 0:
+            writer.writeheader()
+        writer.writerow(score_data)
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0")

@@ -17,12 +17,80 @@
       rel="stylesheet"
       href="{{ url_for('static', filename='landingpage.css') }}"
     />
+
+    <style>
+      .ad-container {
+        background-color: #ffffff;
+        border: 2px solid #ff0000;
+        border-radius: 10px;
+        padding: 20px;
+        text-align: center;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        max-width: 100%;
+        margin-top: 2%;
+      }
+
+      .ad-title {
+        color: #ff0000;
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+      }
+
+      .ad-details {
+        font-size: 18px;
+        margin-bottom: 15px;
+        color: #333;
+      }
+
+      .ad-link {
+        display: inline-block;
+        text-decoration: none;
+        background-color: #ff0000;
+        color: #ffffff;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 18px;
+        font-weight: bold;
+      }
+
+      .ad-link:hover {
+        background-color: #cc0000;
+      }
+
+      @media (max-width: 600px) {
+        .ad-container {
+          padding: 15px;
+        }
+
+        .ad-title {
+          font-size: 20px;
+        }
+
+        .ad-details {
+          font-size: 16px;
+        }
+
+        .ad-link {
+          font-size: 16px;
+          padding: 8px 16px;
+        }
+
+        ad-container {
+          background-color: #ffffff;
+          border: 2px solid #ff0000;
+          border-radius: 10px;
+          padding: 20px;
+          text-align: center;
+          box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+          max-width: 100%;
+          margin-top: 8%;
+        }
+      }
+    </style>
   </head>
 
   <body>
-
-
-
     <nav class="navbar">
       <div class="container top-bar">
         <a href="{{ url_for('home') }}" class="logo"
@@ -49,21 +117,33 @@
       </div>
     </nav>
 
-
-        <!--  Mock Exam Ad SECTION -->
-
-
+    <!--  Mock Exam Ad SECTION -->
 
     <div class="ad-container">
-      <div class="ad-title">🔥 Register Now for Our Online Mock Test! 🔥</div>
-      <div class="ad-details">🗓️ <strong>Date:</strong> Sunday, 18 August 2024<br>
-        <div class="ad-details"> 🏷️ <strong>Registration Fee:</strong> 500/- PKR Only<br>
-      💻 <strong>Location:</strong> Online</div>
-      <div class="ad-details">Don't miss out on this opportunity! Register now by clicking the link below and secure your spot. Prepare, practice, and perform! 💪✨</div>
-      <a href="https://forms.gle/9jqD8D9iWZg6ppZW6" class="ad-link">Register Now</a><br><br>
-      <a href="{{ url_for('AdRules') }}">Click here for more details</a>
-  </div>
-</div>
+      <div class="ad-title">🚀 Start Your MDCAT Test Now! 🚀</div>
+      <div class="ad-details">
+        🗓️ <strong>Date:</strong> Sunday, 18 August 2024<br />
+        Get ready to ace your MDCAT! Click the button below to log in and begin
+        your test. 💪✨
+      </div>
+      <a href="{{ url_for('loginmockexam') }}" class="ad-link">
+        <button
+          class="start-test-button"
+          style="
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+          "
+        >
+          Start Test
+        </button>
+      </a>
+    </div>
 
     <!--  HERO SECTION -->
 
@@ -116,10 +196,7 @@
           </h1>
           <p>
             Our search section allows you to find tutorials or lectures for any
-            subject, topic or course on YouTube. It displays the top 30 videos
-            ensuring that the most popular tutorials appear first. Enjoy a
-            distraction-free and ad-free experience, helping you stay focused
-            and maximize your learning potential.
+            subject, topic or course on YouTube Ad-Free. 
           </p>
         </div>
       </div>
@@ -149,11 +226,7 @@
           Prepare for your MDAT exam with our comprehensive full-length mock
           tests. These tests simulate the actual exam environment, helping you
           identify strengths and weaknesses, improve time management, and build
-          confidence. Receive detailed feedback and explanations for each
-          question to understand your mistakes and learn from them. Our mock
-          tests cover all sections of the MDAT exam and are regularly updated to
-          reflect the latest patterns and questions. Start practicing now to
-          boost your preparation and achieve your best score!
+          confidence.
           <br /><a href="{{ url_for('login') }}"
             ><button class="btn">Practice Now</button></a
           >
@@ -175,12 +248,7 @@
         <p>
           Solve over 20,000 MCQs across all subjects for the MDCAT exam. These
           questions are designed to cover every aspect of the syllabus,
-          providing thorough practice and helping you master each topic. Enhance
-          your preparation, improve your accuracy, and increase your confidence
-          by tackling a wide variety of questions updated regularly to match the
-          latest exam trends. Start practicing now to ensure comprehensive
-          coverage and excel in your MDCAT exam!
-        </p>
+          providing thorough practice and helping you master each topic.
         <a href="{{ url_for('login') }}"
           ><button class="btn" style="background: #f78176">Solve Now</button></a
         >
@@ -201,11 +269,7 @@
         <p>
           Read our latest blogs about study tips and MDCAT preparation. Our
           blogs offer valuable insights, expert advice, and the latest updates
-          to help you stay informed and ahead in your exam preparation. Discover
-          effective study strategies, time management techniques, and detailed
-          guides on various MDCAT topics. Stay motivated and well-prepared with
-          our regularly updated content tailored to support your academic
-          journey.
+          to help you stay informed and ahead in your exam preparation.
         </p>
         <a href="#"
           ><button class="btn" style="background: #f8bc24">Read Now</button></a
